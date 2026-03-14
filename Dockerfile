@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk AS build
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:21 AS build
 WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
@@ -6,7 +6,7 @@ RUN ./mvnw dependency:go-offline
 COPY src/ src/
 RUN ./mvnw package -DskipTests
 
-FROM eclipse-temurin:21-jre
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:21
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8081
