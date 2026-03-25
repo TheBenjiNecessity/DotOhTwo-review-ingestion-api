@@ -27,6 +27,7 @@ services:
 
   kafka:
     image: apache/kafka:latest
+    profiles: [kafka]
     ports:
       - "9092:9092"
     environment:
@@ -51,6 +52,7 @@ services:
     ports:
       - "8081:8081"
     environment:
+      - SPRING_PROFILES_ACTIVE=local
       - SPRING_CASSANDRA_CONTACT_POINTS=cassandra
       - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
       - SPRING_CASSANDRA_KEYSPACE_NAME=review_keyspace
@@ -58,8 +60,6 @@ services:
     depends_on:
       cassandra-init:
         condition: service_completed_successfully
-      kafka:
-        condition: service_healthy
 
 volumes:
   cassandra-data:
