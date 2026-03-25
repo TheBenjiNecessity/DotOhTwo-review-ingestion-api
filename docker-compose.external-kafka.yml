@@ -1,0 +1,9 @@
+services:
+  review-api:
+    networks:
+      - default
+      - dotohtwo_springboot_restapi_default
+
+networks:
+  dotohtwo_springboot_restapi_default:
+    external: true
