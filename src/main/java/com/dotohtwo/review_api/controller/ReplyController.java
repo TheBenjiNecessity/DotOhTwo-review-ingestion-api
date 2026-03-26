@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,6 +18,11 @@ public class ReplyController {
 
     public ReplyController(ReplyService replyService) {
         this.replyService = replyService;
+    }
+
+    @GetMapping("/{replyId}/replies")
+    public ResponseEntity<List<Reply>> getRepliesForReply(@PathVariable UUID replyId) {
+        return ResponseEntity.ok(replyService.getReplies(replyId));
     }
 
     @PostMapping("/{replyId}/replies")

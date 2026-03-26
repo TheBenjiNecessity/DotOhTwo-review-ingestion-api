@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
-
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -65,6 +65,11 @@ public class ReviewController {
         } catch (DuplicateReviewException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+    @GetMapping("/{reviewId}/replies")
+    public ResponseEntity<List<Reply>> getRepliesForReview(@PathVariable UUID reviewId) {
+        return ResponseEntity.ok(replyService.getReplies(reviewId));
     }
 
     @PostMapping("/{reviewId}/replies")

@@ -7,6 +7,7 @@ import com.dotohtwo.review_api.repository.ReplyRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,6 +17,10 @@ public class ReplyService {
 
     public ReplyService(ReplyRepository replyRepository) {
         this.replyRepository = replyRepository;
+    }
+
+    public List<Reply> getReplies(UUID parentId) {
+        return replyRepository.findByKeyParentId(parentId);
     }
 
     public Reply createReply(UUID parentId, CreateReplyRequest request) {
