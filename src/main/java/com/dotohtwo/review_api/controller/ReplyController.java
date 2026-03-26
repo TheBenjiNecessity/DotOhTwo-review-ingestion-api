@@ -20,6 +20,13 @@ public class ReplyController {
         this.replyService = replyService;
     }
 
+    @GetMapping("/{replyId}")
+    public ResponseEntity<Reply> getReply(@PathVariable UUID replyId) {
+        return replyService.getReply(replyId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{replyId}/replies")
     public ResponseEntity<List<Reply>> getRepliesForReply(@PathVariable UUID replyId) {
         return ResponseEntity.ok(replyService.getReplies(replyId));

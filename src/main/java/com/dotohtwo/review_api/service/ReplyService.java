@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,9 +24,15 @@ public class ReplyService {
         return replyRepository.findByKeyParentId(parentId);
     }
 
+    public Optional<Reply> getReply(UUID replyId) {
+        return replyRepository.findByReplyId(replyId);
+    }
+
     public Reply createReply(UUID parentId, CreateReplyRequest request) {
+        UUID replyId = UUID.randomUUID();
         Reply reply = new Reply();
-        reply.setKey(new ReplyKey(parentId, UUID.randomUUID()));
+        reply.setKey(new ReplyKey(parentId, replyId));
+        reply.setReplyId(replyId);
         reply.setAuthorId(request.authorId());
         reply.setContent(request.content());
         reply.setCreatedAt(Instant.now());
