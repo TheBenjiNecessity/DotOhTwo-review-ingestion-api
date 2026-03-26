@@ -2,14 +2,21 @@ package com.dotohtwo.review_api.controller;
 
 import com.dotohtwo.review_api.dto.CreateReplyRequest;
 import com.dotohtwo.review_api.dto.CreateReviewRequest;
+import com.dotohtwo.review_api.dto.PagedReviewsResponse;
 import com.dotohtwo.review_api.exception.DuplicateReviewException;
 import com.dotohtwo.review_api.model.Reply;
 import com.dotohtwo.review_api.model.Review;
+import com.dotohtwo.review_api.model.ReviewByAuthor;
 import com.dotohtwo.review_api.service.ReplyService;
 import com.dotohtwo.review_api.service.ReviewService;
+import org.springframework.data.cassandra.core.query.CassandraPageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.ByteBuffer;
+import java.util.Base64;
 
 import java.util.UUID;
 
@@ -23,6 +30,25 @@ public class ReviewController {
     public ReviewController(ReviewService reviewService, ReplyService replyService) {
         this.reviewService = reviewService;
         this.replyService = replyService;
+    }
+
+    @GetMapping
+    public ResponseEntity<PagedReviewsResponse> getReviewsByAuthor(
+            @RequestParam String authorId,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String pageToken) {
+        ByteBuffer pagingState = pageToken != null
+                ? ByteBuffer.wrap(Base64.getDecoder().decode(pageToken))
+                : null;
+        Slice<ReviewByAuthor> slice = reviewService.getReviewsByAuthor(authorId, pageSize, pagingState);
+        String nextPageToken = null;
+        if (slice.hasNext()) {
+            ByteBuffer nextPagingState = ((CassandraPageRequest) slice.nextPageable()).getPagingState();
+            if (nextPagingState != null) {
+                nextPageToken = Base64.getEncoder().encodeToString(nextPagingState.array());
+            }
+        }
+        return ResponseEntity.ok(new PagedReviewsResponse(slice.getContent(), nextPageToken));
     }
 
     @GetMapping("/{reviewId}")

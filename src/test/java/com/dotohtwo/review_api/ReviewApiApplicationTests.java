@@ -1,6 +1,7 @@
 package com.dotohtwo.review_api;
 
 import com.dotohtwo.review_api.repository.ReplyRepository;
+import com.dotohtwo.review_api.repository.ReviewByAuthorRepository;
 import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,9 @@ class ReviewApiApplicationTests {
 
 	@MockitoBean
 	ReviewRepository reviewRepository;
+
+	@MockitoBean
+	ReviewByAuthorRepository reviewByAuthorRepository;
 
 	@MockitoBean
 	ReplyRepository replyRepository;
