@@ -2,6 +2,7 @@ package com.dotohtwo.review_api.controller;
 
 import com.dotohtwo.review_api.dto.CreateReplyRequest;
 import com.dotohtwo.review_api.dto.CreateReviewRequest;
+import com.dotohtwo.review_api.exception.DuplicateReviewException;
 import com.dotohtwo.review_api.model.Reply;
 import com.dotohtwo.review_api.model.Review;
 import com.dotohtwo.review_api.service.ReplyService;
@@ -26,7 +27,11 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<Review> createReview(@RequestBody CreateReviewRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(request));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(request));
+        } catch (DuplicateReviewException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @PostMapping("/{reviewId}/replies")

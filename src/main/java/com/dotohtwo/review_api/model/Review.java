@@ -5,6 +5,7 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("reviews_by_product")
 public class Review {
@@ -12,8 +13,8 @@ public class Review {
     @PrimaryKey
     private ReviewKey key;
 
-    @Column("author_id")
-    private String authorId;
+    @Column("review_id")
+    private UUID reviewId;
 
     @Column("rating")
     private int rating;
@@ -27,8 +28,8 @@ public class Review {
     public ReviewKey getKey() { return key; }
     public void setKey(ReviewKey key) { this.key = key; }
 
-    public String getAuthorId() { return authorId; }
-    public void setAuthorId(String authorId) { this.authorId = authorId; }
+    public UUID getReviewId() { return reviewId; }
+    public void setReviewId(UUID reviewId) { this.reviewId = reviewId; }
 
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }

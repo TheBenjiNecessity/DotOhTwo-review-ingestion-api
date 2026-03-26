@@ -2,6 +2,7 @@ package com.dotohtwo.review_api.service;
 
 import com.dotohtwo.review_api.dto.CreateReviewRequest;
 import com.dotohtwo.review_api.dto.ReviewCreatedEvent;
+import com.dotohtwo.review_api.exception.DuplicateReviewException;
 import com.dotohtwo.review_api.model.Review;
 import com.dotohtwo.review_api.model.ReviewKey;
 import com.dotohtwo.review_api.repository.ReviewRepository;
@@ -22,9 +23,14 @@ public class ReviewService {
     }
 
     public Review createReview(CreateReviewRequest request) {
+        ReviewKey key = new ReviewKey(request.productId(), request.authorId());
+        if (reviewRepository.existsById(key)) {
+            throw new DuplicateReviewException(request.authorId(), request.productId().toString());
+        }
+
         Review review = new Review();
-        review.setKey(new ReviewKey(request.productId(), UUID.randomUUID()));
-        review.setAuthorId(request.authorId());
+        review.setKey(key);
+        review.setReviewId(UUID.randomUUID());
         review.setRating(request.rating());
         review.setContent(request.content());
         review.setCreatedAt(Instant.now());
@@ -32,9 +38,9 @@ public class ReviewService {
         Review saved = reviewRepository.save(review);
 
         reviewEventProducer.publishReviewCreated(new ReviewCreatedEvent(
-                saved.getKey().getReviewId(),
+                saved.getReviewId(),
                 saved.getKey().getProductId(),
-                saved.getAuthorId(),
+                saved.getKey().getAuthorId(),
                 saved.getRating(),
                 saved.getContent(),
                 saved.getCreatedAt()
