@@ -25,6 +25,13 @@ public class ReviewController {
         this.replyService = replyService;
     }
 
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<Review> getReview(@PathVariable UUID reviewId) {
+        return reviewService.getReview(reviewId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<Review> createReview(@RequestBody CreateReviewRequest request) {
         try {

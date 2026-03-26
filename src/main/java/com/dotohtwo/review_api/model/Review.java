@@ -1,6 +1,7 @@
 package com.dotohtwo.review_api.model;
 
 import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -13,6 +14,7 @@ public class Review {
     @PrimaryKey
     private ReviewKey key;
 
+    @Indexed
     @Column("review_id")
     private UUID reviewId;
 

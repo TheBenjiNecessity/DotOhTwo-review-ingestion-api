@@ -9,6 +9,7 @@ import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,6 +21,10 @@ public class ReviewService {
     public ReviewService(ReviewRepository reviewRepository, ReviewEventProducer reviewEventProducer) {
         this.reviewRepository = reviewRepository;
         this.reviewEventProducer = reviewEventProducer;
+    }
+
+    public Optional<Review> getReview(UUID reviewId) {
+        return reviewRepository.findByReviewId(reviewId);
     }
 
     public Review createReview(CreateReviewRequest request) {
