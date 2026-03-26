@@ -24,6 +24,7 @@ import java.util.UUID;
 public class ReviewService {
 
     private static final String USER_REVIEWS_KEY = "user:%s:reviews";
+    private static final String REVIEWABLE_REVIEWS_KEY = "reviewable:%s:reviews";
 
     private final ReviewRepository reviewRepository;
     private final ReviewByAuthorRepository reviewByAuthorRepository;
@@ -46,6 +47,16 @@ public class ReviewService {
 
     public List<ReviewByAuthor> getCachedReviewsByAuthor(String authorId) {
         String redisKey = USER_REVIEWS_KEY.formatted(authorId);
+        List<Object> cached = redisTemplate.opsForList().range(redisKey, 0, -1);
+        if (cached == null) return List.of();
+        return cached.stream()
+                .filter(ReviewByAuthor.class::isInstance)
+                .map(ReviewByAuthor.class::cast)
+                .toList();
+    }
+
+    public List<ReviewByAuthor> getCachedReviewsByReviewable(String reviewableId) {
+        String redisKey = REVIEWABLE_REVIEWS_KEY.formatted(reviewableId);
         List<Object> cached = redisTemplate.opsForList().range(redisKey, 0, -1);
         if (cached == null) return List.of();
         return cached.stream()
@@ -83,8 +94,11 @@ public class ReviewService {
         reviewByAuthor.setContent(saved.getContent());
         reviewByAuthorRepository.save(reviewByAuthor);
 
-        String redisKey = USER_REVIEWS_KEY.formatted(saved.getKey().getAuthorId());
-        redisTemplate.opsForList().leftPush(redisKey, reviewByAuthor);
+        String userRedisKey = USER_REVIEWS_KEY.formatted(saved.getKey().getAuthorId());
+        redisTemplate.opsForList().leftPush(userRedisKey, reviewByAuthor);
+
+        String reviewableRedisKey = REVIEWABLE_REVIEWS_KEY.formatted(saved.getKey().getProductId());
+        redisTemplate.opsForList().leftPush(reviewableRedisKey, reviewByAuthor);
 
         reviewEventProducer.publishReviewCreated(new ReviewCreatedEvent(
                 saved.getReviewId(),
