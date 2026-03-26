@@ -11,30 +11,47 @@ import com.dotohtwo.review_api.repository.ReviewByAuthorRepository;
 import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ReviewService {
 
+    private static final String USER_REVIEWS_KEY = "user:%s:reviews";
+
     private final ReviewRepository reviewRepository;
     private final ReviewByAuthorRepository reviewByAuthorRepository;
     private final ReviewEventProducer reviewEventProducer;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public ReviewService(ReviewRepository reviewRepository,
                          ReviewByAuthorRepository reviewByAuthorRepository,
-                         ReviewEventProducer reviewEventProducer) {
+                         ReviewEventProducer reviewEventProducer,
+                         RedisTemplate<String, Object> redisTemplate) {
         this.reviewRepository = reviewRepository;
         this.reviewByAuthorRepository = reviewByAuthorRepository;
         this.reviewEventProducer = reviewEventProducer;
+        this.redisTemplate = redisTemplate;
     }
 
     public Optional<Review> getReview(UUID reviewId) {
         return reviewRepository.findByReviewId(reviewId);
+    }
+
+    public List<ReviewByAuthor> getCachedReviewsByAuthor(String authorId) {
+        String redisKey = USER_REVIEWS_KEY.formatted(authorId);
+        List<Object> cached = redisTemplate.opsForList().range(redisKey, 0, -1);
+        if (cached == null) return List.of();
+        return cached.stream()
+                .filter(ReviewByAuthor.class::isInstance)
+                .map(ReviewByAuthor.class::cast)
+                .toList();
     }
 
     public Slice<ReviewByAuthor> getReviewsByAuthor(String authorId, int pageSize, ByteBuffer pagingState) {
@@ -65,6 +82,9 @@ public class ReviewService {
         reviewByAuthor.setRating(saved.getRating());
         reviewByAuthor.setContent(saved.getContent());
         reviewByAuthorRepository.save(reviewByAuthor);
+
+        String redisKey = USER_REVIEWS_KEY.formatted(saved.getKey().getAuthorId());
+        redisTemplate.opsForList().leftPush(redisKey, reviewByAuthor);
 
         reviewEventProducer.publishReviewCreated(new ReviewCreatedEvent(
                 saved.getReviewId(),

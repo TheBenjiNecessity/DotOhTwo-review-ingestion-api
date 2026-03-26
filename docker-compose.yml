@@ -47,6 +47,16 @@ services:
       retries: 10
       start_period: 15s
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   review-api:
     build: .
     ports:
@@ -57,9 +67,12 @@ services:
       - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
       - SPRING_CASSANDRA_KEYSPACE_NAME=review_keyspace
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_DATA_REDIS_HOST=redis
     depends_on:
       cassandra-init:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
 volumes:
   cassandra-data:
