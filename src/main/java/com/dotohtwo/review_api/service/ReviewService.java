@@ -101,12 +101,12 @@ public class ReviewService {
         redisTemplate.opsForList().leftPush(reviewableRedisKey, reviewByAuthor);
 
         reviewEventProducer.publishReviewCreated(new ReviewCreatedEvent(
-                saved.getReviewId(),
-                saved.getKey().getProductId(),
-                saved.getKey().getAuthorId(),
-                saved.getRating(),
-                saved.getContent(),
-                saved.getCreatedAt()
+            saved.getReviewId(),
+            saved.getKey().getProductId(),
+            saved.getKey().getAuthorId(),
+            saved.getRating(),
+            saved.getContent(),
+            saved.getCreatedAt()
         ));
 
         return saved;

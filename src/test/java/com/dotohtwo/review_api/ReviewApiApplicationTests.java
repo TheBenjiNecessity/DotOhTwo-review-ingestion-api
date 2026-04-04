@@ -12,7 +12,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest(properties = "spring.autoconfigure.exclude=" +
 		"org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration," +
 		"org.springframework.boot.data.cassandra.autoconfigure.DataCassandraAutoConfiguration," +
-		"org.springframework.boot.data.cassandra.autoconfigure.CassandraRepositoriesAutoConfiguration"
+		"org.springframework.boot.data.cassandra.autoconfigure.CassandraRepositoriesAutoConfiguration," +
+		"org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration," +
+		"org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration," +
+		"org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration"
 )
 class ReviewApiApplicationTests {
 
