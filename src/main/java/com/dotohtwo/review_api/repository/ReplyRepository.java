@@ -12,5 +12,5 @@ public interface ReplyRepository extends CassandraRepository<Reply, ReplyKey> {
 
     List<Reply> findByKeyParentId(UUID parentId);
 
-    Optional<Reply> findByReplyId(UUID replyId);
+    Optional<Reply> findByKeyReplyId(UUID replyId);
 }

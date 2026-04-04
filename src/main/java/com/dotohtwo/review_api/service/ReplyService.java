@@ -25,14 +25,13 @@ public class ReplyService {
     }
 
     public Optional<Reply> getReply(UUID replyId) {
-        return replyRepository.findByReplyId(replyId);
+        return replyRepository.findByKeyReplyId(replyId);
     }
 
     public Reply createReply(UUID parentId, CreateReplyRequest request) {
         UUID replyId = UUID.randomUUID();
         Reply reply = new Reply();
         reply.setKey(new ReplyKey(parentId, replyId));
-        reply.setReplyId(replyId);
         reply.setAuthorId(request.authorId());
         reply.setContent(request.content());
         reply.setCreatedAt(Instant.now());

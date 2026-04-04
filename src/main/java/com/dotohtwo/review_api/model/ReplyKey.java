@@ -2,6 +2,7 @@ package com.dotohtwo.review_api.model;
 
 import org.springframework.data.cassandra.core.cql.Ordering;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 
@@ -15,6 +16,7 @@ public class ReplyKey implements Serializable {
     @PrimaryKeyColumn(name = "parent_id", type = PrimaryKeyType.PARTITIONED)
     private UUID parentId;
 
+    @Indexed
     @PrimaryKeyColumn(name = "reply_id", type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
     private UUID replyId;
 
