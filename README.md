@@ -9,23 +9,23 @@ Spring Boot service for ingesting reviews and replies, persisting them to Cassan
 
 ## Running
 
-### With local Kafka
+### With local infrastructure
 
-Starts Cassandra and Kafka together:
+Starts Cassandra, Kafka, and Redis locally:
 
 ```bash
 docker compose --profile kafka up --build
 ```
 
-### With external Kafka
+### With external infrastructure
 
-Use this when Kafka is already running from the `DotOhTwo_springboot_restapi` project:
+Use this when Cassandra, Kafka, and Redis are already running from the `DotOhTwo_springboot_restapi` project:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.external-kafka.yml up --build
+docker compose -f docker-compose.external.yml up --build
 ```
 
-The external Kafka must be running before starting this service.
+The external infrastructure must be running before starting this service.
 
 ## API
 
