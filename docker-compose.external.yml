@@ -1,0 +1,18 @@
+services:
+  review-api:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
+      - SPRING_CASSANDRA_KEYSPACE_NAME=review_keyspace
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_DATA_REDIS_HOST=redis
+    networks:
+      - default
+      - dotohtwo_springboot_restapi_default
+
+networks:
+  dotohtwo_springboot_restapi_default:
+    external: true
