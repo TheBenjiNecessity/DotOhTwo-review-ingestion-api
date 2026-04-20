@@ -1,4 +1,14 @@
 services:
+  cassandra-init:
+    image: cassandra:latest
+    restart: "no"
+    entrypoint: >
+      cqlsh cassandra -e
+      "CREATE KEYSPACE IF NOT EXISTS review_keyspace
+       WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+    networks:
+      - dotohtwolocalinfra
+
   review-api:
     build: .
     ports:
@@ -9,10 +19,13 @@ services:
       - SPRING_CASSANDRA_KEYSPACE_NAME=review_keyspace
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - SPRING_DATA_REDIS_HOST=redis
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
     networks:
       - default
-      - dotohtwo_springboot_restapi_default
+      - dotohtwolocalinfra
 
 networks:
-  dotohtwo_springboot_restapi_default:
+  dotohtwolocalinfra:
     external: true
