@@ -1,6 +1,6 @@
 package com.dotohtwo.review_api.service;
 
-import com.dotohtwo.review_api.dto.ReviewCreatedEvent;
+import com.dotohtwo.models.dto.ReviewCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

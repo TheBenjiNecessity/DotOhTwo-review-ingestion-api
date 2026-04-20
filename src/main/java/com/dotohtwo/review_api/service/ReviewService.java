@@ -1,12 +1,12 @@
 package com.dotohtwo.review_api.service;
 
 import com.dotohtwo.review_api.dto.CreateReviewRequest;
-import com.dotohtwo.review_api.dto.ReviewCreatedEvent;
-import com.dotohtwo.review_api.exception.DuplicateReviewException;
-import com.dotohtwo.review_api.model.Review;
-import com.dotohtwo.review_api.model.ReviewByAuthor;
-import com.dotohtwo.review_api.model.ReviewByAuthorKey;
-import com.dotohtwo.review_api.model.ReviewKey;
+import com.dotohtwo.models.dto.ReviewCreatedEvent;
+import com.dotohtwo.models.exception.DuplicateReviewException;
+import com.dotohtwo.models.model.Review;
+import com.dotohtwo.models.model.ReviewByAuthor;
+import com.dotohtwo.models.model.ReviewByAuthorKey;
+import com.dotohtwo.models.model.ReviewKey;
 import com.dotohtwo.review_api.repository.ReviewByAuthorRepository;
 import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;

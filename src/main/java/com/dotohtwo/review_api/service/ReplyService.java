@@ -1,8 +1,8 @@
 package com.dotohtwo.review_api.service;
 
 import com.dotohtwo.review_api.dto.CreateReplyRequest;
-import com.dotohtwo.review_api.model.Reply;
-import com.dotohtwo.review_api.model.ReplyKey;
+import com.dotohtwo.models.model.Reply;
+import com.dotohtwo.models.model.ReplyKey;
 import com.dotohtwo.review_api.repository.ReplyRepository;
 import org.springframework.stereotype.Service;
 

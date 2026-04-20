@@ -1,7 +1,7 @@
 package com.dotohtwo.review_api.repository;
 
-import com.dotohtwo.review_api.model.Reply;
-import com.dotohtwo.review_api.model.ReplyKey;
+import com.dotohtwo.models.model.Reply;
+import com.dotohtwo.models.model.ReplyKey;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 
 import java.util.List;

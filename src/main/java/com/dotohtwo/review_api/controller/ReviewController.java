@@ -2,11 +2,11 @@ package com.dotohtwo.review_api.controller;
 
 import com.dotohtwo.review_api.dto.CreateReplyRequest;
 import com.dotohtwo.review_api.dto.CreateReviewRequest;
-import com.dotohtwo.review_api.dto.PagedReviewsResponse;
-import com.dotohtwo.review_api.exception.DuplicateReviewException;
-import com.dotohtwo.review_api.model.Reply;
-import com.dotohtwo.review_api.model.Review;
-import com.dotohtwo.review_api.model.ReviewByAuthor;
+import com.dotohtwo.models.dto.PagedReviewsResponse;
+import com.dotohtwo.models.exception.DuplicateReviewException;
+import com.dotohtwo.models.model.Reply;
+import com.dotohtwo.models.model.Review;
+import com.dotohtwo.models.model.ReviewByAuthor;
 import com.dotohtwo.review_api.service.ReplyService;
 import com.dotohtwo.review_api.service.ReviewService;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;

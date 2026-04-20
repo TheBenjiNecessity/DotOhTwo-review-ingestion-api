@@ -1,7 +1,7 @@
 package com.dotohtwo.review_api.repository;
 
-import com.dotohtwo.review_api.model.ReviewByAuthor;
-import com.dotohtwo.review_api.model.ReviewByAuthorKey;
+import com.dotohtwo.models.model.ReviewByAuthor;
+import com.dotohtwo.models.model.ReviewByAuthorKey;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

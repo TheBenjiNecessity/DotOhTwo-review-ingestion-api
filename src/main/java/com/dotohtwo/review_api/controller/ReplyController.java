@@ -1,7 +1,7 @@
 package com.dotohtwo.review_api.controller;
 
 import com.dotohtwo.review_api.dto.CreateReplyRequest;
-import com.dotohtwo.review_api.model.Reply;
+import com.dotohtwo.models.model.Reply;
 import com.dotohtwo.review_api.service.ReplyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.dotohtwo.review_api.controller;
 
-import com.dotohtwo.review_api.model.ReviewByAuthor;
+import com.dotohtwo.models.model.ReviewByAuthor;
 import com.dotohtwo.review_api.service.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
