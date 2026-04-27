@@ -20,10 +20,9 @@ services:
       cassandra:
         condition: service_healthy
     restart: "no"
-    entrypoint: >
-      cqlsh cassandra -e
-      "CREATE KEYSPACE IF NOT EXISTS review_keyspace
-       WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+    entrypoint: cqlsh cassandra -f /init.cql
+    volumes:
+      - ./cassandra/init.cql:/init.cql:ro
 
   kafka:
     image: apache/kafka:latest
