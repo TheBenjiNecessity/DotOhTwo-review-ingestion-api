@@ -80,11 +80,11 @@ When a review is created, a `ReviewCreatedEvent` is published to the `reviews` K
 
 The service is built and pushed to ECR via AWS CodeBuild using `buildspec.yml`. The following environment variables must be set in the CodeBuild project:
 
-| Variable | Description |
-|---|---|
-| `AWS_DEFAULT_REGION` | AWS region |
-| `AWS_ACCOUNT_ID` | AWS account ID |
-| `IMAGE_REPO_NAME` | ECR repository name |
-| `IMAGE_TAG` | Image tag (e.g. `latest`) |
+| Variable             | Description               |
+| -------------------- | ------------------------- |
+| `AWS_DEFAULT_REGION` | AWS region                |
+| `AWS_ACCOUNT_ID`     | AWS account ID            |
+| `IMAGE_REPO_NAME`    | ECR repository name       |
+| `IMAGE_TAG`          | Image tag (e.g. `latest`) |
 
 The active Spring profile is controlled by the `SPRING_PROFILES_ACTIVE` environment variable on the container.
