@@ -65,6 +65,10 @@ public class ReviewService {
                 .toList();
     }
 
+    public List<ReviewByAuthor> getReviewsByAuthorBetween(String authorId, Instant from, Instant to) {
+        return reviewByAuthorRepository.findByKeyAuthorIdAndKeyCreatedAtBetween(authorId, from, to);
+    }
+
     public Slice<ReviewByAuthor> getReviewsByAuthor(String authorId, int pageSize, ByteBuffer pagingState) {
         CassandraPageRequest pageRequest = pagingState != null
                 ? CassandraPageRequest.of(CassandraPageRequest.first(pageSize), pagingState)
