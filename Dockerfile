@@ -3,9 +3,11 @@ RUN yum install -y tar gzip
 WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
+ARG CODEARTIFACT_AUTH_TOKEN
+ENV CODEARTIFACT_AUTH_TOKEN=$CODEARTIFACT_AUTH_TOKEN
+RUN ./mvnw -s .mvn/settings.xml dependency:go-offline
 COPY src/ src/
-RUN ./mvnw package -DskipTests
+RUN ./mvnw -s .mvn/settings.xml package -DskipTests
 
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:21
 WORKDIR /app

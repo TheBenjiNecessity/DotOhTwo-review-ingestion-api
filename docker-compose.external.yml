@@ -10,7 +10,10 @@ services:
       - dotohtwolocalinfra
 
   review-api:
-    build: .
+    build:
+      context: .
+      args:
+        CODEARTIFACT_AUTH_TOKEN: ${CODEARTIFACT_AUTH_TOKEN}
     ports:
       - "8081:8081"
     environment:
