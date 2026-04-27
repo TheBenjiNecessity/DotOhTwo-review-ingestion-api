@@ -6,8 +6,11 @@ import com.dotohtwo.models.exception.DuplicateReviewException;
 import com.dotohtwo.models.model.Review;
 import com.dotohtwo.models.model.ReviewByAuthor;
 import com.dotohtwo.models.model.ReviewByAuthorKey;
+import com.dotohtwo.models.model.ReviewByProduct;
+import com.dotohtwo.models.model.ReviewByProductKey;
 import com.dotohtwo.models.model.ReviewKey;
 import com.dotohtwo.review_api.repository.ReviewByAuthorRepository;
+import com.dotohtwo.review_api.repository.ReviewByProductRepository;
 import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.domain.Slice;
@@ -28,15 +31,18 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewByAuthorRepository reviewByAuthorRepository;
+    private final ReviewByProductRepository reviewByProductRepository;
     private final ReviewEventProducer reviewEventProducer;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public ReviewService(ReviewRepository reviewRepository,
                          ReviewByAuthorRepository reviewByAuthorRepository,
+                         ReviewByProductRepository reviewByProductRepository,
                          ReviewEventProducer reviewEventProducer,
                          RedisTemplate<String, Object> redisTemplate) {
         this.reviewRepository = reviewRepository;
         this.reviewByAuthorRepository = reviewByAuthorRepository;
+        this.reviewByProductRepository = reviewByProductRepository;
         this.reviewEventProducer = reviewEventProducer;
         this.redisTemplate = redisTemplate;
     }
@@ -66,7 +72,11 @@ public class ReviewService {
     }
 
     public List<ReviewByAuthor> getReviewsByAuthorBetween(String authorId, Instant from, Instant to) {
-        return reviewByAuthorRepository.findByKeyAuthorIdAndKeyCreatedAtBetween(authorId, from, to);
+        return reviewByAuthorRepository.findByAuthorIdAndCreatedAtBetween(authorId, from, to);
+    }
+
+    public List<ReviewByProduct> getReviewsByProductBetween(UUID productId, Instant from, Instant to) {
+        return reviewByProductRepository.findByProductIdAndCreatedAtBetween(productId, from, to);
     }
 
     public Slice<ReviewByAuthor> getReviewsByAuthor(String authorId, int pageSize, ByteBuffer pagingState) {
@@ -97,6 +107,13 @@ public class ReviewService {
         reviewByAuthor.setRating(saved.getRating());
         reviewByAuthor.setContent(saved.getContent());
         reviewByAuthorRepository.save(reviewByAuthor);
+
+        ReviewByProduct reviewByProduct = new ReviewByProduct();
+        reviewByProduct.setKey(new ReviewByProductKey(saved.getKey().getProductId(), saved.getCreatedAt(), saved.getReviewId()));
+        reviewByProduct.setAuthorId(saved.getKey().getAuthorId());
+        reviewByProduct.setRating(saved.getRating());
+        reviewByProduct.setContent(saved.getContent());
+        reviewByProductRepository.save(reviewByProduct);
 
         String userRedisKey = USER_REVIEWS_KEY.formatted(saved.getKey().getAuthorId());
         redisTemplate.opsForList().leftPush(userRedisKey, reviewByAuthor);
