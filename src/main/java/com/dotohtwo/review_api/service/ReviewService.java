@@ -15,6 +15,7 @@ import com.dotohtwo.review_api.repository.ReviewRepository;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
@@ -26,7 +27,7 @@ import java.util.UUID;
 @Service
 public class ReviewService {
 
-    private static final String USER_REVIEWS_KEY = "user:%s:reviews";
+    private static final String TIMELINE_KEY = "timeline:%s";
     private static final String REVIEWABLE_REVIEWS_KEY = "reviewable:%s:reviews";
 
     private final ReviewRepository reviewRepository;
@@ -34,17 +35,20 @@ public class ReviewService {
     private final ReviewByProductRepository reviewByProductRepository;
     private final ReviewEventProducer reviewEventProducer;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     public ReviewService(ReviewRepository reviewRepository,
                          ReviewByAuthorRepository reviewByAuthorRepository,
                          ReviewByProductRepository reviewByProductRepository,
                          ReviewEventProducer reviewEventProducer,
-                         RedisTemplate<String, Object> redisTemplate) {
+                         RedisTemplate<String, Object> redisTemplate,
+                         StringRedisTemplate stringRedisTemplate) {
         this.reviewRepository = reviewRepository;
         this.reviewByAuthorRepository = reviewByAuthorRepository;
         this.reviewByProductRepository = reviewByProductRepository;
         this.reviewEventProducer = reviewEventProducer;
         this.redisTemplate = redisTemplate;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     public Optional<Review> getReview(UUID reviewId) {
@@ -52,13 +56,24 @@ public class ReviewService {
     }
 
     public List<ReviewByAuthor> getCachedReviewsByAuthor(String authorId) {
-        String redisKey = USER_REVIEWS_KEY.formatted(authorId);
-        List<Object> cached = redisTemplate.opsForList().range(redisKey, 0, -1);
-        if (cached == null) return List.of();
-        return cached.stream()
-                .filter(ReviewByAuthor.class::isInstance)
-                .map(ReviewByAuthor.class::cast)
+        String redisKey = TIMELINE_KEY.formatted(authorId);
+        List<String> reviewIds = stringRedisTemplate.opsForList().range(redisKey, 0, -1);
+        if (reviewIds == null || reviewIds.isEmpty()) return List.of();
+        return reviewIds.stream()
+                .map(id -> reviewRepository.findByReviewId(UUID.fromString(id)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(this::toReviewByAuthor)
                 .toList();
+    }
+
+    private ReviewByAuthor toReviewByAuthor(Review review) {
+        ReviewByAuthor rba = new ReviewByAuthor();
+        rba.setKey(new ReviewByAuthorKey(review.getKey().getAuthorId(), review.getCreatedAt(), review.getReviewId()));
+        rba.setProductId(review.getKey().getProductId());
+        rba.setRating(review.getRating());
+        rba.setContent(review.getContent());
+        return rba;
     }
 
     public List<ReviewByAuthor> getCachedReviewsByReviewable(String reviewableId) {
@@ -115,7 +130,7 @@ public class ReviewService {
         reviewByProduct.setContent(saved.getContent());
         reviewByProductRepository.save(reviewByProduct);
 
-        String userRedisKey = USER_REVIEWS_KEY.formatted(saved.getKey().getAuthorId());
+        String userRedisKey = TIMELINE_KEY.formatted(saved.getKey().getAuthorId());
         redisTemplate.opsForList().leftPush(userRedisKey, reviewByAuthor);
 
         String reviewableRedisKey = REVIEWABLE_REVIEWS_KEY.formatted(saved.getKey().getProductId());
